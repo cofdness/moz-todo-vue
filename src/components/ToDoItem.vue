@@ -1,13 +1,28 @@
 <template>
-    <div class="custom-checkbox">
-        <input class="checkbox" type="checkbox" :id="id" :checked="isDone" @change="$emit('checkbox-changed')" />
-        <label class="checkbox-label" :for="id">{{label}}</label>
+    <div class="stack-small" v-if="!isEditing">
+        <div class="custom-checkbox">
+            <input class="checkbox" type="checkbox" :id="id" :checked="isDone" @change="$emit('checkbox-changed')" />
+            <label class="checkbox-label" :for="id">{{label}}</label>
+        </div>
+        <div clas="btn-group">
+            <button type="button" class="btn" @click="toggleToDoEditForm">
+                Edit <span class="visually-hidden">{{label}}</span>
+            </button>
+            <button type="button" class="btn btn__danger" @click="deleteTodo">
+                Delete <span class="visually-hidden">{{label}}</span>
+            </button>
+        </div>
     </div>
+    <to-do-edit v-else :id="id" :label="label" @item-edited="itemEdited($event)" @edit-canceled="editCanceled()">
+    </to-do-edit>
 </template>
 
 <script>
 
+
+    import ToDoEdit from "./ToDoEdit";
     export default {
+        components: {ToDoEdit},
         props: {
             label:{required: true, type: String},
             done:{required: true, type: Boolean},
@@ -16,7 +31,23 @@
         name: "ToDoItem",
         data() {
             return {
-                isDone: this.done
+                isDone: this.done,
+                isEditing: false
+            }
+        },
+        methods: {
+            deleteTodo(){
+                this.$emit('item-deleted');
+            },
+            toggleToDoEditForm(){
+                this.isEditing = true;
+            },
+            itemEdited() {
+                // this.$emit('item-edited', newLabel); app component will catch this event so we don't emit it again
+                this.isEditing = false;
+            },
+            editCanceled() {
+                this.isEditing = false;
             }
         }
     }
