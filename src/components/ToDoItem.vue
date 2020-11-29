@@ -5,7 +5,7 @@
             <label class="checkbox-label" :for="id">{{label}}</label>
         </div>
         <div clas="btn-group">
-            <button type="button" class="btn" @click="toggleToDoEditForm">
+            <button type="button" class="btn" ref="editButton" @click="toggleToDoEditForm">
                 Edit <span class="visually-hidden">{{label}}</span>
             </button>
             <button type="button" class="btn btn__danger" @click="deleteTodo">
@@ -45,9 +45,17 @@
             itemEdited() {
                 // this.$emit('item-edited', newLabel); app component will catch this event so we don't emit it again
                 this.isEditing = false;
+                this.focusOnEditButton();
             },
             editCanceled() {
                 this.isEditing = false;
+                this.focusOnEditButton();
+            },
+            focusOnEditButton(){
+                this.$nextTick(() => {
+                    const editButtonRef = this.$refs.editButton;
+                    editButtonRef.focus();
+                })
             }
         }
     }
